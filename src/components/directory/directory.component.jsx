@@ -1,6 +1,6 @@
 import React from "react";
 import MenuItem from '../menu-item/menu-item.component'
-import './directory.component.scss'
+import './directory.styles.scss'
 
 // this will be a class because we do need to story the state of the values being passed through it
 class Directory extends React.Component {
@@ -49,7 +49,7 @@ class Directory extends React.Component {
         <div className="directory-menu">
         {
             this.state.sections.map(({id, ...otherSectionProps}) => ( // spreading all
-                <MenuItem id= {id} {...otherSectionProps} />
+                <MenuItem key= {id} {...otherSectionProps} />
             ))
             }
         </div>

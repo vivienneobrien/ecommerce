@@ -7,6 +7,6 @@ import {BrowserRouter} from "react-router-dom"
 ReactDOM.render( 
      <BrowserRouter>
           <App />
-     </BrowserRouter>, // gives app all the functionality of router
+     </BrowserRouter>, // gives app all the functionality of routing this library provides
      
      document.getElementById('root'));
