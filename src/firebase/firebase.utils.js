@@ -12,6 +12,38 @@ const config = {
   measurementId: "G-7B3CZ4SJBZ",
 };
 
+// userAuth i.e. UID + additional data something we might need later
+
+export const createUserProfileDocument = async (userAuth, additionalData) => {
+  if (!userAuth) return; // if there is no user auth, if null that means false, so if it is not false
+
+  // if it does exist then we want to query inside the firestore to see if it does exist
+  const userRef = firestore.doc(`users/${userAuth.uid}`);
+
+  // this isnt async so we are going to await this
+  const snapShop = await userRef.get();
+
+  if (!snapShop.exists) {
+    const { displayName, email } = userAuth;
+    const createdAt = new Date(); // calling date javascript creates a new date object of current time and date
+
+
+    // if this snapshop doesnt exist then we will create data in that place
+    // it will always return us back our user ref
+    // checking and now making new users inside of our database
+    try {
+      await userRef.set({
+        displayName,
+        email,
+        createdAt,
+        ...additionalData,
+      });
+    } catch (error) {
+      console.log("Error creating user", error.message);
+    }
+  }
+};
+
 firebase.initializeApp(config);
 
 export const auth = firebase.auth(); // assigning auth and firestore as viarbales
@@ -21,5 +53,5 @@ const provider = new firebase.auth.GoogleAuthProvider(); // this is our google a
 // takes some custom params
 provider.setCustomParameters({ prompt: "select_account" }); // always trigger google pop up whenever we use this google auth provider for authenticationa dn sign in
 
-export const signInWithGoogle = () => auth.signInWithPopup(provider); // multiple pop ups we want to config to make sure its oonly a google sign up 
+export const signInWithGoogle = () => auth.signInWithPopup(provider); // multiple pop ups we want to config to make sure its oonly a google sign up
 export default firebase;
