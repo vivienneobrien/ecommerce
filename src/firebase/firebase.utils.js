@@ -12,36 +12,52 @@ const config = {
   measurementId: "G-7B3CZ4SJBZ",
 };
 
-// userAuth i.e. UID + additional data something we might need later
+// We are checking and making new users inside of database based on that userAuth i.e. UID + additional data something we might need later
+
+// based on that User Auth object
+// we dont make multiple copies of user in database because we check if it is in our database
+// now that our data is being pulled into our application,
+// we want to figure out how we store this data so that we can use it in our application
+// BASICALLY - We stored the user data in our database but now we have to store that data in the "state" of our application so we can use it in our app!
 
 export const createUserProfileDocument = async (userAuth, additionalData) => {
-  if (!userAuth) return; // if there is no user auth, if null that means false, so if it is not false
+  if (!userAuth) return; // if there is no user auth/ if it does not exist, if null that means false, so if it is not false
 
   // if it does exist then we want to query inside the firestore to see if it does exist
   const userRef = firestore.doc(`users/${userAuth.uid}`);
 
   // this isnt async so we are going to await this
-  const snapShop = await userRef.get();
+  const snapShot = await userRef.get();
 
-  if (!snapShop.exists) {
+  // if it doesnt exist then we want to create
+  // in order for us to create we have to use the document reference object not the snapshot
+  // the snapshot simply represents the data
+  // if we use CRUD create, read, update/ delete at all we have to use the document reference object
+  if (!snapShot.exists) {
+    // what data do we want to use in order to create this document
     const { displayName, email } = userAuth;
     const createdAt = new Date(); // calling date javascript creates a new date object of current time and date
-
 
     // if this snapshop doesnt exist then we will create data in that place
     // it will always return us back our user ref
     // checking and now making new users inside of our database
+
+    // .set is the create method
+    // pass in an object that has all of the data
     try {
       await userRef.set({
         displayName,
         email,
         createdAt,
-        ...additionalData,
+         ...additionalData,
       });
     } catch (error) {
       console.log("Error creating user", error.message);
     }
   }
+  // the above code simply creates the snapshot
+  // but we still might want our userRef in our code for something
+  return userRef;
 };
 
 firebase.initializeApp(config);
